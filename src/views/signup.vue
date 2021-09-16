@@ -3,9 +3,9 @@
       <navbar/>
       <div class="signup-wrapper">
         <div class="signup__container">
-        <h1 class="signup__heading">Welcome to Fintellia</h1>
+        <h1 class="signup__heading">Welcome to WeeCash</h1>
         <p class="signup__text">Create your account</p>
-        <form class="signup__form" @submit.prevent="register">
+        <form class="signup__form" @submit.prevent="validateForm">
           <div class="input__container">
             <label for="email" class="input__label">Username</label>
             <input
@@ -16,6 +16,9 @@
                 placeholder="Enter your Username"
                 class="input__field"
             />
+            <p v-if="submitted && !$v.form.username.required" class="error__text">
+              This field is required
+            </p>
             </div>
             <div class="input__container">
             <label for="email" class="input__label">Email</label>
@@ -27,6 +30,9 @@
                 placeholder="Enter your email"
                 class="input__field"
             />
+            <p v-if="submitted && !$v.form.email.required" class="error__text">
+              This field is required
+            </p>
             </div>
             <div class="input__container input__container--relative">
             <label for="password" class="input__label">Password</label>
@@ -38,6 +44,9 @@
                 placeholder="Enter your password"
                 class="input__field"
             />
+            <p v-if="submitted && !$v.form.password.required" class="error__text">
+              This field is required
+            </p>
             </div>
             <div class="form__footer">
                 <button type="submit" :disabled="loading === true" class="input__button">
@@ -50,7 +59,7 @@
         </form>
         <p class="signup__text">
             Already have an account?
-            <router-link class="signup__text--blue" to="/signup">Sign In</router-link>
+            <router-link class="signup__text--blue" to="/login">Sign In</router-link>
         </p>
         </div>
       </div>   
@@ -59,6 +68,7 @@
 
 <script>
 import Navbar from '../components/navbar.vue'
+import { required, email } from 'vuelidate/lib/validators'
 export default {
     components: {
         Navbar
@@ -70,9 +80,31 @@ export default {
         password: '',
         returnSecureToken: true
       },
-      loading: false
+      loading: false,
+      submitted: false
     }),
+    validations: {
+      form: {
+        username: {
+          required,
+        },
+        email: {
+          required,
+          email,
+        },
+        password: {
+          required,
+        },
+      },
+    },
     methods: {
+      validateForm() {
+        this.submitted = true
+        const invalid = this.$v.form.$invalid
+        if (!invalid) {
+          this.register()
+        }
+      },
       async register() {
         try {
           this.loading = true
@@ -89,7 +121,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.error__text {
+  color: red;
+  margin-top: 5px;
+}
 .signup-wrapper  {
     display: flex;
     align-items: center;
@@ -133,7 +169,7 @@ export default {
   max-width: 434px;
 }
 .input__container {
-  margin-bottom: 36px;
+  margin-bottom: 12px;
   width: 100%;
 }
 .input__container--relative {
@@ -186,6 +222,7 @@ export default {
   line-height: 19px;
   border: 0;
   cursor: pointer;
+  margin-top: 7px;
 }
 
 </style>

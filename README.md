@@ -1,4 +1,4 @@
-# fintellia
+# WeeCash
 
 ## Project setup
 ```

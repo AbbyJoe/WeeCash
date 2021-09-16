@@ -2,11 +2,14 @@
   <div class="sidebar" :class="{ visible: visible }">
     <div class="store-name">
       <div class="logo">
-        <img src="@/assets/images/store-icon.svg" alt="store-icon" />
+        <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle opacity="0.2" cx="17.3767" cy="17.3767" r="17.3767" fill="#046AF3"/>
+          <circle cx="17.3767" cy="17.3767" r="10" fill="white" stroke="#046AF3" stroke-width="4.99812"/>
+        </svg>
       </div>
       <div class="name">
         <router-link to="/">
-          <p>Fintellia</p>
+          <p>WeeCash</p>
         </router-link>
       </div>
     </div>
@@ -65,9 +68,7 @@
         <span style="padding-left:15px">Logout</span>
       </li>
     </ul>
-    <button @click="$emit('toggle-sidebar')" class="close button">
-      X <i class="fa fa-times"></i>
-    </button>
+    <span style="font-size:30px; color: #fff" @click="$emit('toggle-sidebar')" class="close button">&times;</span>
   </div>
 </template>
 

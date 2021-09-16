@@ -33,6 +33,7 @@ export default {
     item: {
       type: Object,
       required: true,
+      // default: '',
     },
   },
 };

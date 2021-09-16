@@ -50,18 +50,11 @@ export default {
 	gap: 8px;
 	align-items: center;
 }
-/* .input__container {
-    position: relative;
-} */
-/* .input__container img {
-    position: absolute;
-    right: 12px;
-} */
  .input__search {
 	background-color: #ffffff;
     border: 1px solid #e4e9f2;
     box-sizing: border-box;
-    width: 350px;
+    width: 330px;
     height: 40px;
     padding-left: 15px;
     border-radius: 4px;

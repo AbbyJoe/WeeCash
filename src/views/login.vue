@@ -5,7 +5,8 @@
         <div class="login__container">
         <h1 class="login__heading">Welcome Back</h1>
         <p class="login__text">Enter your credentials to access your account</p>
-        <form class="login__form" @submit.prevent="login">
+        <form class="login__form" @submit.prevent="validateForm">
+          <div v-if="error" class="bg-danger p-2 text-white">{{error}}</div>
             <div class="input__container">
             <label for="email" class="input__label">Email</label>
             <input
@@ -16,6 +17,12 @@
                 placeholder="Enter your email"
                 class="input__field"
             />
+            <p v-if="submitted && !$v.form.email.required" class="error__text">
+            This field is required
+            </p>
+            <p v-if="submitted && !$v.form.email.email" class="error__text">
+              Please enter a valid email
+            </p>
             </div>
             <div class="input__container input__container--relative">
             <label for="password" class="input__label">Password</label>
@@ -27,6 +34,9 @@
                 placeholder="Enter your password"
                 class="input__field"
             />
+            <p v-if="submitted && !$v.form.password.required" class="error__text">
+              This field is required
+            </p>
             </div>
             <div class="form__footer">
             <router-link
@@ -53,6 +63,7 @@
 
 <script>
 import Navbar from '../components/navbar.vue'
+import { required, email } from 'vuelidate/lib/validators'
 export default {
     components: {
         Navbar
@@ -63,17 +74,40 @@ export default {
         password: '',
         returnSecureToken: true
       },
-      loading: false
+      loading: false,
+      submitted: false,
+      error: null
     }),
+     validations: {
+      form: {
+        email: {
+          required,
+          email,
+        },
+        password: {
+          required,
+        },
+      },
+    },
     methods: {
+      validateForm() {
+      this.submitted = true
+      const invalid = this.$v.form.$invalid
+      if (!invalid) {
+        this.login()
+      }
+    },
       async login() {
         try {
           this.loading = true
           await this.$store.dispatch('login', this.form)
           this.loading = false
-        } catch (e) {
+        } catch (errors) {
           this.loading = false
-          console.log(e)
+          this.error = errors.error.message
+          setTimeout(() => {
+            this.error = null
+          }, 3000)
         }
         
       }
@@ -125,7 +159,7 @@ export default {
   max-width: 434px;
 }
 .input__container {
-  margin-bottom: 36px;
+  margin-bottom: 12px;
   width: 100%;
 }
 .input__container--relative {
@@ -167,6 +201,10 @@ export default {
   justify-content: flex-start;
   align-items: center;
 }
+.error__text {
+  color: red;
+  margin-top: 5px;
+}
 .input__button {
   background-color: #07074D;
   border-radius: 5px;
@@ -178,6 +216,7 @@ export default {
   line-height: 19px;
   border: 0;
   cursor: pointer;
+  margin-top: 5px;
 }
 
 </style>

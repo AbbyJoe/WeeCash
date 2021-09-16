@@ -1,7 +1,11 @@
 <template>
   <header class="header-container">
-      <div>
-          <router-link to="/" class="navbar-logo">Fintellia</router-link>
+      <div style="display:flex; align-items:center">
+          <svg width="35" height="35" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle opacity="0.2" cx="17.3767" cy="17.3767" r="17.3767" fill="#046AF3"/>
+          <circle cx="17.3767" cy="17.3767" r="10" fill="white" stroke="#046AF3" stroke-width="4.99812"/>
+        </svg>
+          <router-link to="/" class="navbar-logo">WeeCash</router-link>
       </div>
       <div>
         <ul class="header-navbar">
@@ -55,11 +59,12 @@ export default {
         list-style: none;
     }
     .navbar-logo {
-        font-size: 32px;
-        font-weight: 600;
+        font-size: 27px;
+        font-weight: 700;
         color: #07074D;
         line-height: 1.2;
         text-decoration: none;
+        margin-left: 4px;
     }
     .nav-link {
         text-decoration: none;

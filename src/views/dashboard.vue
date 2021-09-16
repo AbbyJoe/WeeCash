@@ -3,6 +3,14 @@
       <sidebar @toggle-sidebar="toggleSidebar" :visible="showSidebar" />
       <div class="main-content">
         <dash-navbar></dash-navbar>
+        <div v-if="showError" @click="showError = !showError" class="alert alert-error">
+            <p>{{ alertMsg === 'error' ? 'Please make a deposit. Your account does not have sufficient funds.' : null }}</p>
+            <span>&times;</span>
+        </div>
+        <div v-if="show" @click="show = !show" class="alert alert-success">
+            <p>{{ alertMsg }}</p>
+            <span>&times;</span>
+        </div>
         <div style="margin:0px 0px 10px 40px">
          <button class="button nav-opener" @click="toggleSidebar">O</button>
         </div>
@@ -10,26 +18,50 @@
              <div class="card">
                  <div class="card-header">
                      <h1>Your Total Balance</h1>
-                     <p class="header--balance">$3222.10</p>
+                     <p class="header--balance">${{ totalBalance }}</p>
                      <p class="header--date">January 11 2021 - 09:20pm</p>
-                     <p class="pills">+2.41%</p>
+                     <p class="pills"><svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.99702 0.659515L10.3329 1.99535L7.48618 4.84202L5.15285 2.50868L0.830349 6.83702L1.65285 7.65952L5.15285 4.15952L7.48618 6.49285L11.1612 2.82368L12.497 4.15952V0.659515H8.99702Z" fill="#01D066"/>
+                    </svg>
+                     +2.41%</p>
                  </div>
              </div>
              <div class="card">
                  <div class="card-header">
-                     <h1>Money Withdrawal</h1>
-                     <p class="header--balance">$1300.22</p>
+                     <h1>Your Total Withdrawals</h1>
+                     <p class="header--balance">${{ amountWithdraw }}</p>
                      <p class="header--date">June 12 2021 - 04:20pm</p>
-                     <p class="pills-error">-4.27%</p>
+                     <p class="pills-error"><svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.83034 7.04715L10.1662 5.71132L7.31951 2.86465L4.98618 5.19798L0.663677 0.86965L1.48618 0.0471497L4.98618 3.54715L7.31951 1.21382L10.9945 4.88298L12.3303 3.54715V7.04715H8.83034Z" fill="#FD3758"/>
+                        </svg>
+                        -4.27%</p>
                  </div>
              </div>
              <div class="card">
-                 <div class="card-header">
-                     <h1>Loan Offer</h1>
-                     <p class="header--balance">$100</p>
-                     <p class="header--date">January 11 2021 - 09:20pm</p>
-                     <p class="pills">2.41%</p>
-                 </div>
+                 <h1 class="send--funds">Send Funds</h1>
+                 <div class="input__container">
+                    <label for="email" class="input__label">Recipent</label>
+                    <input
+                        id="text"
+                        type="text"
+                        name="text"
+                        v-model="form.recipient"
+                        placeholder="Enter your recipient"
+                        class="input__field"
+                    />
+                </div>
+                <div class="input__container">
+                    <label for="email" class="input__label">Amount</label>
+                    <input
+                        id="amount"
+                        type="text"
+                        name="amount"
+                        v-model="form.amount"
+                        placeholder="Enter your amount"
+                        class="input__field"
+                    />
+                </div>
+                <button type="button" @click="sendFunds" class="input__button">Send</button>
              </div>
          </div>
          <section class="section__wrapper">
@@ -51,10 +83,10 @@
               </appButton>
             </li>
             <li>
-              <router-link to="/" class="create-payment">
+              <button @click="deposit" type="button" class="create-payment">
                 <img src="@/assets/images/plus-icon.svg" alt="plus-icon" />
-                Create payment
-              </router-link>
+                Top Up Balance
+              </button>
             </li>
           </ul>
         </div>
@@ -71,7 +103,7 @@
                   ></custom-check>
                 </div>
                 <div class="column-name amount">Amount</div>
-                <div class="column-name description">Description</div>
+                <div class="column-name description">Transaction Id</div>
                 <div class="column-name customer">Customer</div>
                 <div class="column-name date">date</div>
                 <div class="column-name actions"></div>
@@ -118,21 +150,72 @@ export default {
     customCheck,
     tableItem,
   },
-  data() {
-    return {
+  data:() => ({
     showSidebar: false,
+    show:false,
+    showError:false,
     data: data,
-    }
-  },
+    totalBalance: 0,
+    amountWithdraw: 0,
+    form: {
+      recipient: null,
+      amount: null,
+    },
+    referenceNumber: null,
+    alertMsg: null,
+  }),
   methods: {
-      toggleSidebar() {
-        this.showSidebar = !this.showSidebar
-      },
-      selectAll() {
-        this.data.forEach((item) => {
-         item.checked = item.checked ? (item.checked = false) : (item.checked = true);
-        })
-      }
+    toggleSidebar() {
+    this.showSidebar = !this.showSidebar
+    },
+    selectAll() {
+    this.data.forEach((item) => {
+        item.checked = item.checked ? (item.checked = false) : (item.checked = true);
+    })
+    },
+    // calculate total balance
+    sendFunds() {
+        if(this.totalBalance <= 0 || this.form.amount > this.totalBalance) {
+            this.showError = true
+            this.alertMsg = 'error'
+            return;
+        } else {
+            this.amountWithdraw = parseInt(this.form.amount);
+            this.totalBalance -= parseInt(this.form.amount);
+            this.show = true;
+            this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
+            this.getReferenceNumber()
+            this.data.unshift({
+                description: this.referenceNumber,
+                amount: this.form.amount,
+                customer: this.form.recipient,
+                date: new Date().toLocaleString()
+            });
+            this.form.recipient = null
+            this.form.amount = null;
+        }
+    },
+    deposit() {
+        const deposit = prompt("how much are you depositing today?");
+        this.totalBalance += parseInt(deposit);
+        this.show = true;
+        this.alertMsg = `You just deposited $${deposit} to your wallet.`
+        this.getReferenceNumber()
+        this.data.unshift({
+            description: this.referenceNumber,
+            amount: deposit,
+            customer: 'Abiodun - deposit',
+            date: new Date().toLocaleString()
+        });
+    },
+    getReferenceNumber(){
+        let text = "";
+        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for( let i=0; i < 30; i++ ) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+            this.referenceNumber = text;
+        }
+    }
   }
 
 }
@@ -171,20 +254,27 @@ export default {
     width: 100%;
     box-shadow: 0 35px 50px -30px rgba(0, 0, 0, 0.2);
 }
+.send--funds {
+    font-size: 17px;
+    font-weight: 600;
+    color: #00003f;
+    margin-bottom: 15px; 
+    text-align: center;
+}
 .card-header {
     text-align: center;
 }
 .card-header h1 {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 600;
     color: #00003f;
-    margin-bottom: 15px;
+    margin: 25px 0 20px 0;
 }
 .header--balance {
-    font-size: 40px;
+    font-size: 50px;
     font-weight: 700;
     color: #07074D;
-    margin-bottom: 14px;
+    margin-bottom: 17px;
 }
 .header--date {
     font-size: 14px;
@@ -192,21 +282,25 @@ export default {
     color: rgba(88, 103, 141, 0.5);
 }
 .pills {
-    margin: 10px auto;
+    margin: 15px auto;
     padding: 5px;
     border-radius: 4px;
     font-size: 12px;
     background:#d4ecda;
     color: #09B66D;
-    width: 50px;
+    display: flex;
+    align-items: center;
+    width: 70px;
 }
 .pills-error {
     margin: 10px auto;
     padding: 5px;
     border-radius: 4px;
     font-size: 12px;
-    color: #723036;
-    width: 50px;
+    color: #FD3758;
+    width: 70px;
+    display: flex;
+    align-items: center;
     background: #f7d7da;
 }
 .header {
@@ -228,6 +322,8 @@ export default {
 }
 .header .actions li .create-payment {
     text-decoration: none;
+    border: 0;
+    cursor: pointer;
     background: #07074D;
     box-shadow: 0px 2px 5px rgba(60, 66, 87, 0.08), 0px 0px 0px 1px #07074D, 0px 1px 1px rgba(0, 0, 0, 0.12);
     border-radius: 4px;
@@ -355,6 +451,82 @@ export default {
     box-shadow: 0px 2px 5px rgba(60, 66, 87, 0.08), 0px 0px 0px 1px rgba(60, 66, 87, 0.16), 0px 1px 1px rgba(0, 0, 0, 0.12);
     border-radius: 4px;
 }
+.input__container {
+  margin-bottom: 10px;
+  width: 100%;
+}
+.input__label {
+  font-size: 13px;
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+  line-height: 18px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #58678d;
+}
+.input__field {
+  background-color: #ffffff;
+  border: 1px solid #e4e9f2;
+  box-sizing: border-box;
+  width: 100%;
+  height: 39px;
+  padding-left: 15px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+.input__field:focus {
+    outline: #07074D;
+}
+.input__field:active {
+  border: 1px solid #07074D;
+}
+.input__field::placeholder {
+  color: rgba(88, 103, 141, 0.5);
+  font-size: 15px;
+  line-height: 20px;
+}
+.input__button {
+  background-color: #07074D;
+  border-radius: 5px;
+  width: 100%;
+  color: #fff;
+  max-width: 100%;
+  height: 39px;
+  font-size: 16px;
+  line-height: 19px;
+  margin-top: 10px;
+  border: 0;
+  cursor: pointer;
+}
+.alert {
+    position: absolute;
+    top: 10px;
+    right: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0px;
+    padding:12px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 400;
+    width: 400px;
+}
+.alert:hover {
+  cursor: pointer;
+}
+.alert-success {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+  border: 1px solid darken(#DFF2BF, 15%);
+}
+.alert-error {
+  color: #D8000C;
+  background-color: #FFBABA;
+  border: 1px solid darken(#FFBABA, 15%);
+}
+ 
 @media screen and (max-width: 1200px) {
     .page-layout .right-checkbox {
         display: none;

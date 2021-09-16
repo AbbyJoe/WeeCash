@@ -33,26 +33,5 @@
     "customer": "psir@typre.com",
     "date": "7 Jul, 12:34",
     "checked": false
-},
-{
-    "amount": "93.76",
-    "description": "dff08e3b-037e-4fc9-a587-92850d82868e",
-    "customer": "qomarkhalildubai0@g...",
-    "date": "7 Jul, 12:16",
-    "checked": false
-},
-{
-    "amount": "931.00",
-    "description": "3005be4a-6d4d-487c-85c3-d61cfe64ef63",
-    "customer": "kfouzan.saleemc@yah...",
-    "date": "7 Jul, 11:31",
-    "checked": false
-},
-{
-    "amount": "19.99",
-    "description": "7e960154-e2e2-49eb-9252-edd51f421cd0",
-    "customer": "asaifah@gmx.com",
-    "date": "7 Jul, 11:18",
-    "checked": false
 }
 ]
