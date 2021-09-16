@@ -155,8 +155,8 @@ export default {
     show:false,
     showError:false,
     data: data,
-    totalBalance: 0,
-    amountWithdraw: 0,
+    totalBalance: localStorage.getItem('totalBalance') || 0,
+    amountWithdraw: localStorage.getItem('amountWithdraw') || 0,
     form: {
       recipient: null,
       amount: null,
@@ -173,54 +173,55 @@ export default {
         item.checked = item.checked ? (item.checked = false) : (item.checked = true);
     })
     },
-    // calculate total balance
+    // send money
     sendFunds() {
-        if(this.totalBalance <= 0 || this.form.amount > this.totalBalance) {
-            this.showError = true
-            this.alertMsg = 'error'
-            return;
-        } else {
-            this.amountWithdraw = parseInt(this.form.amount);
-            this.totalBalance -= parseInt(this.form.amount);
-            this.show = true;
-            this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
-            this.getReferenceNumber()
-            this.data.unshift({
-                description: this.referenceNumber,
-                amount: this.form.amount,
-                customer: this.form.recipient,
-                date: new Date().toLocaleString()
-            });
-            this.form.recipient = null
-            this.form.amount = null;
-        }
-    },
-    deposit() {
-        const deposit = prompt("how much are you depositing today?");
-        this.totalBalance += parseInt(deposit);
+      if(this.totalBalance <= 0 || this.form.amount > this.totalBalance) {
+          this.showError = true
+          this.alertMsg = 'error'
+          return;
+      } else {
+        const amountWithdraw = this.amountWithdraw = parseInt(this.amountWithdraw) + parseInt(this.form.amount);
+        const totalBalance = this.totalBalance -= parseInt(this.form.amount);
+        localStorage.setItem('totalBalance', totalBalance);
+        localStorage.setItem('amountWithdraw', amountWithdraw);
         this.show = true;
-        this.alertMsg = `You just deposited $${deposit} to your wallet.`
+        this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
         this.getReferenceNumber()
         this.data.unshift({
-            description: this.referenceNumber,
-            amount: deposit,
-            customer: 'Abiodun - deposit',
-            date: new Date().toLocaleString()
+          description: this.referenceNumber,
+          amount: this.form.amount,
+          customer: this.form.recipient,
+          date: new Date().toLocaleString()
         });
+        this.form.recipient = null
+        this.form.amount = null;
+      }
+    },
+    deposit() {
+      const deposit = prompt("How much are you depositing today?");
+      const totalBalance = this.totalBalance += parseInt(deposit);
+      localStorage.setItem('totalBalance', totalBalance);
+      this.show = true;
+      this.alertMsg = `You just deposited $${deposit} into your wallet.`
+      this.getReferenceNumber()
+      this.data.unshift({
+        description: this.referenceNumber,
+        amount: deposit,
+        customer: 'Abiodun - deposit',
+        date: new Date().toLocaleString()
+      });
     },
     getReferenceNumber(){
-        let text = "";
-        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for( let i=0; i < 30; i++ ) {
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-            this.referenceNumber = text;
-        }
+      let text = "";
+      let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for( let i=0; i < 30; i++ ) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+        this.referenceNumber = text;
+      }
     }
   }
-
 }
 </script>
-
 <style scoped>
 .page-layout {
     display: flex;
