@@ -198,6 +198,10 @@ export default {
         if(this.totalBalance <= 0 || this.form.amount > this.totalBalance) {
           this.showError = true
           this.alertMsg = 'error'
+          setTimeout(() => {
+            this.showError = false
+            this.alertMsg = null
+          }, 5000)
           return;
         } else {
           const amountWithdraw = this.amountWithdraw = parseInt(this.amountWithdraw) + parseInt(this.form.amount);
@@ -206,6 +210,10 @@ export default {
           localStorage.setItem('amountWithdraw', amountWithdraw);
           this.show = true;
           this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
+          setTimeout(() => {
+            this.show = false;
+            this.alertMsg = null;
+          }, 5000)
           this.getReferenceNumber()
           this.data.unshift({
             description: this.referenceNumber,
@@ -215,6 +223,7 @@ export default {
           });
           this.form.recipient = null
           this.form.amount = null;
+          this.submitted = false
         }
       }
     },
@@ -225,6 +234,10 @@ export default {
         localStorage.setItem('totalBalance', totalBalance);
         this.show = true;
         this.alertMsg = `You just deposited $${deposit} into your wallet.`
+        setTimeout(() => {
+          this.show = false;
+          this.alertMsg = null;
+        }, 5000)
         this.getReferenceNumber()
         this.data.unshift({
           description: this.referenceNumber,
