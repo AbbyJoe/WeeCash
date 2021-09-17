@@ -187,9 +187,9 @@ export default {
     this.showSidebar = !this.showSidebar
     },
     selectAll() {
-    this.data.forEach((item) => {
-        item.checked = item.checked ? (item.checked = false) : (item.checked = true);
-    })
+      this.data.forEach((item) => {
+          item.checked = item.checked ? (item.checked = false) : (item.checked = true);
+      })
     },
     // send money
     sendFunds() {
@@ -205,10 +205,8 @@ export default {
           }, 5000)
           return;
         } else {
-          const amountWithdraw = this.amountWithdraw = parseInt(this.amountWithdraw) + parseInt(this.form.amount);
-          const totalBalance = this.totalBalance -= parseInt(this.form.amount);
-          localStorage.setItem('totalBalance', totalBalance);
-          localStorage.setItem('amountWithdraw', amountWithdraw);
+          this.amountWithdraw = parseInt(this.amountWithdraw) + parseInt(this.form.amount);
+          this.totalBalance -= parseInt(this.form.amount);
           this.show = true;
           this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
           setTimeout(() => {
@@ -231,8 +229,7 @@ export default {
     deposit() {
       const deposit = prompt("How much are you depositing today?");
       if (deposit) {
-        const totalBalance = this.totalBalance += parseInt(deposit);
-        localStorage.setItem('totalBalance', totalBalance);
+        this.totalBalance += parseInt(deposit);
         this.show = true;
         this.alertMsg = `You just deposited $${deposit} into your wallet.`
         setTimeout(() => {

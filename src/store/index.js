@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '../router/index'
-const idToken = 'AIzaSyBtzpOWVgBehBQ-YEm-GhLiYVJ_NxvtplY'
+const token = 'AIzaSyBtzpOWVgBehBQ-YEm-GhLiYVJ_NxvtplY'
+const BASE_URL = 'https://identitytoolkit.googleapis.com/v1/accounts:'
 
 Vue.use(Vuex)
 
@@ -32,7 +33,7 @@ export default new Vuex.Store({
     //register user
     async register({commit}, userData) {
       try {
-        let response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${idToken}`, userData)
+        let response = await axios.post(`${BASE_URL}signUp?key=${token}`, userData)
         commit('SET_AUTH', response.data)
         localStorage.setItem('idToken',response.data.idToken )
         localStorage.setItem('localId', response.data.localId),
@@ -47,7 +48,7 @@ export default new Vuex.Store({
     //login user
     async login({commit}, userData) {
     try {
-      let response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${idToken}`, userData)
+      let response = await axios.post(`${BASE_URL}signInWithPassword?key=${token}`, userData)
       commit('SET_AUTH', response.data)
       localStorage.setItem('idToken',response.data.idToken)
       localStorage.setItem('localId', response.data.localId)
