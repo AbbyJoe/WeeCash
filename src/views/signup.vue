@@ -6,6 +6,7 @@
         <h1 class="signup__heading">Welcome to WeeCash</h1>
         <p class="signup__text">Create your account</p>
         <form class="signup__form" @submit.prevent="validateForm">
+        <div v-if="errorState" style="color: red; margin-bottom: 6px;">{{errorState}}</div>
           <div class="input__container">
             <label for="email" class="input__label">Username</label>
             <input
@@ -69,6 +70,7 @@
 <script>
 import Navbar from '../components/navbar.vue'
 import { required, email } from 'vuelidate/lib/validators'
+import { mapState } from 'vuex'
 export default {
     components: {
         Navbar
@@ -96,6 +98,9 @@ export default {
           required,
         },
       },
+    },
+    computed: {
+      ...mapState(['errorState']),
     },
     methods: {
       validateForm() {

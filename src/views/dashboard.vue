@@ -164,6 +164,7 @@ export default {
     data: data,
     totalBalance: localStorage.getItem('totalBalance') || 0,
     amountWithdraw: localStorage.getItem('amountWithdraw') || 0,
+    username: localStorage.getItem('userName') || 'Guest',
     form: {
       recipient: null,
       amount: null,
@@ -242,7 +243,7 @@ export default {
         this.data.unshift({
           description: this.referenceNumber,
           amount: deposit,
-          customer: 'Abiodun - deposit',
+          customer: this.username,
           date: new Date().toLocaleString()
         });
       } else {

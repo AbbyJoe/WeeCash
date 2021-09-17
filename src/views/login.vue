@@ -6,7 +6,7 @@
         <h1 class="login__heading">Welcome Back</h1>
         <p class="login__text">Enter your credentials to access your account</p>
         <form class="login__form" @submit.prevent="validateForm">
-          <div v-if="error" class="bg-danger p-2 text-white">{{error}}</div>
+          <div v-if="errorState" style="color:red; margin-bottom: 6px;">{{errorState}}</div>
             <div class="input__container">
             <label for="email" class="input__label">Email</label>
             <input
@@ -64,6 +64,7 @@
 <script>
 import Navbar from '../components/navbar.vue'
 import { required, email } from 'vuelidate/lib/validators'
+import { mapState } from 'vuex'
 export default {
     components: {
         Navbar
@@ -76,7 +77,6 @@ export default {
       },
       loading: false,
       submitted: false,
-      error: null
     }),
      validations: {
       form: {
@@ -88,6 +88,9 @@ export default {
           required,
         },
       },
+    },
+    computed: {
+      ...mapState(['errorState'])
     },
     methods: {
       validateForm() {
@@ -102,12 +105,9 @@ export default {
           this.loading = true
           await this.$store.dispatch('login', this.form)
           this.loading = false
-        } catch (errors) {
+        } catch (error) {
           this.loading = false
-          this.error = errors.error.message
-          setTimeout(() => {
-            this.error = null
-          }, 3000)
+          console.log(error)
         }
         
       }
