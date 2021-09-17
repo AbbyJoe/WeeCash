@@ -49,6 +49,9 @@
                         placeholder="Enter your recipient"
                         class="input__field"
                     />
+                    <p v-if="submitted && !$v.form.recipient.required" class="error__text">
+                      This field is required
+                    </p>
                 </div>
                 <div class="input__container">
                     <label for="email" class="input__label">Amount</label>
@@ -60,6 +63,9 @@
                         placeholder="Enter your amount"
                         class="input__field"
                     />
+                    <p v-if="submitted && !$v.form.amount.required" class="error__text">
+                      This field is required
+                    </p>
                 </div>
                 <button type="button" @click="sendFunds" class="input__button">Send</button>
              </div>
@@ -141,7 +147,7 @@ import appButton from '../components/theButton.vue'
 import customCheck from '../components/customCheck.vue'
 import tableItem from '@/components/tableItem.vue'
 const data = require('@/assets/static/data.json')
-
+import { required } from 'vuelidate/lib/validators'
 export default {
   components: { 
     dashNavbar,
@@ -152,6 +158,7 @@ export default {
   },
   data:() => ({
     showSidebar: false,
+    submitted: false,
     show:false,
     showError:false,
     data: data,
@@ -164,6 +171,16 @@ export default {
     referenceNumber: null,
     alertMsg: null,
   }),
+  validations: {
+      form: {
+        recipient: {
+          required,
+        },
+        amount: {
+          required,
+        },
+      },
+    },
   methods: {
     toggleSidebar() {
     this.showSidebar = !this.showSidebar
@@ -175,41 +192,49 @@ export default {
     },
     // send money
     sendFunds() {
-      if(this.totalBalance <= 0 || this.form.amount > this.totalBalance) {
+      this.submitted = true
+      const invalid = this.$v.form.$invalid
+      if (!invalid) {
+        if(this.totalBalance <= 0 || this.form.amount > this.totalBalance) {
           this.showError = true
           this.alertMsg = 'error'
           return;
-      } else {
-        const amountWithdraw = this.amountWithdraw = parseInt(this.amountWithdraw) + parseInt(this.form.amount);
-        const totalBalance = this.totalBalance -= parseInt(this.form.amount);
-        localStorage.setItem('totalBalance', totalBalance);
-        localStorage.setItem('amountWithdraw', amountWithdraw);
-        this.show = true;
-        this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
-        this.getReferenceNumber()
-        this.data.unshift({
-          description: this.referenceNumber,
-          amount: this.form.amount,
-          customer: this.form.recipient,
-          date: new Date().toLocaleString()
-        });
-        this.form.recipient = null
-        this.form.amount = null;
+        } else {
+          const amountWithdraw = this.amountWithdraw = parseInt(this.amountWithdraw) + parseInt(this.form.amount);
+          const totalBalance = this.totalBalance -= parseInt(this.form.amount);
+          localStorage.setItem('totalBalance', totalBalance);
+          localStorage.setItem('amountWithdraw', amountWithdraw);
+          this.show = true;
+          this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
+          this.getReferenceNumber()
+          this.data.unshift({
+            description: this.referenceNumber,
+            amount: this.form.amount,
+            customer: this.form.recipient,
+            date: new Date().toLocaleString()
+          });
+          this.form.recipient = null
+          this.form.amount = null;
+        }
       }
     },
     deposit() {
       const deposit = prompt("How much are you depositing today?");
-      const totalBalance = this.totalBalance += parseInt(deposit);
-      localStorage.setItem('totalBalance', totalBalance);
-      this.show = true;
-      this.alertMsg = `You just deposited $${deposit} into your wallet.`
-      this.getReferenceNumber()
-      this.data.unshift({
-        description: this.referenceNumber,
-        amount: deposit,
-        customer: 'Abiodun - deposit',
-        date: new Date().toLocaleString()
-      });
+      if (deposit) {
+        const totalBalance = this.totalBalance += parseInt(deposit);
+        localStorage.setItem('totalBalance', totalBalance);
+        this.show = true;
+        this.alertMsg = `You just deposited $${deposit} into your wallet.`
+        this.getReferenceNumber()
+        this.data.unshift({
+          description: this.referenceNumber,
+          amount: deposit,
+          customer: 'Abiodun - deposit',
+          date: new Date().toLocaleString()
+        });
+      } else {
+        return;
+      }
     },
     getReferenceNumber(){
       let text = "";
@@ -527,7 +552,10 @@ export default {
   background-color: #FFBABA;
   border: 1px solid darken(#FFBABA, 15%);
 }
- 
+.error__text {
+  color: red;
+  margin-top: 5px;
+}
 @media screen and (max-width: 1200px) {
     .page-layout .right-checkbox {
         display: none;

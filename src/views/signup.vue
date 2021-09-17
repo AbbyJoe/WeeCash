@@ -12,11 +12,11 @@
                 id="username"
                 type="text"
                 name="username"
-                v-model="form.username"
+                v-model="form.displayName"
                 placeholder="Enter your Username"
                 class="input__field"
             />
-            <p v-if="submitted && !$v.form.username.required" class="error__text">
+            <p v-if="submitted && !$v.form.displayName.required" class="error__text">
               This field is required
             </p>
             </div>
@@ -75,7 +75,7 @@ export default {
     },
     data:() => ({
       form: {
-        username: '',
+        displayName: '',
         email: '',
         password: '',
         returnSecureToken: true
@@ -85,7 +85,7 @@ export default {
     }),
     validations: {
       form: {
-        username: {
+        displayName: {
           required,
         },
         email: {
@@ -108,7 +108,6 @@ export default {
       async register() {
         try {
           this.loading = true
-          await this.$store.commit('register', this.form.username)
           await this.$store.dispatch('register', this.form)
           this.loading = false
         } catch (e) {
