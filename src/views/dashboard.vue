@@ -201,7 +201,6 @@ export default {
           this.alertMsg = 'error'
           setTimeout(() => {
             this.showError = false
-            this.alertMsg = null
           }, 5000)
           return;
         } else {
@@ -211,7 +210,6 @@ export default {
           this.alertMsg = `You just sent $${this.form.amount} to ${this.form.recipient} from your wallet`
           setTimeout(() => {
             this.show = false;
-            this.alertMsg = null;
           }, 5000)
           this.getReferenceNumber()
           this.data.unshift({
@@ -220,9 +218,7 @@ export default {
             customer: this.form.recipient,
             date: new Date().toLocaleString()
           });
-          this.form.recipient = null
-          this.form.amount = null;
-          this.submitted = false
+          this.resetForm();
         }
       }
     },
@@ -234,7 +230,6 @@ export default {
         this.alertMsg = `You just deposited $${deposit} into your wallet.`
         setTimeout(() => {
           this.show = false;
-          this.alertMsg = null;
         }, 5000)
         this.getReferenceNumber()
         this.data.unshift({
@@ -246,6 +241,11 @@ export default {
       } else {
         return;
       }
+    },
+    resetForm() {
+      this.form.recipient = null
+      this.form.amount = null;
+      this.submitted = false
     },
     getReferenceNumber(){
       let text = "";
